@@ -1,4 +1,4 @@
-local version 				= 1.006
+local version 				= 1.007
 local AUTOUPDATE 			= true
 local SCRIPT_NAME			= "FreeeKay-Leona"
 local scriptName 			= "FreeeKay Leona"
