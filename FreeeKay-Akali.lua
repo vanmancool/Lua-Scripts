@@ -17,7 +17,7 @@ local potDelayFunction  = true
 local Recall 			= false
 local IgniteReady		= nil
 
-local version 			= 1.021
+local version 			= 1.022
 local AUTOUPDATE 		= true
 local SCRIPT_NAME		= "FreeeKay-Akali"
 local scriptName		= "FreeeKay Akali"
