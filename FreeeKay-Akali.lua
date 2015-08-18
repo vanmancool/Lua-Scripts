@@ -22,13 +22,12 @@ local AUTOUPDATE 		= true
 local SCRIPT_NAME		= "FreeeKay-Akali"
 local scriptName		= "FreeeKay Akali"
 local SCRIPT_HOSTSITE	= "raw.github.com"
-local SCRIPT_HOSTNAME	= "/vanmancool/Bol-Scripts/master/"
+local SCRIPT_HOSTNAME	= "/vanmancool/Lua-Scripts/master/"
 local SOURCELIB_URL 	= "https://raw.github.com/TheRealSource/public/master/common/SourceLib.lua"
 local SOURCELIB_PATH 	= LIB_PATH.."SourceLib.lua"
 local SXORBWALKLIB_URL	= "https://raw.githubusercontent.com/Superx321/BoL/master/common/SxOrbWalk.lua"
 local SXORBWALKLIB_PATH	= LIB_PATH.."SxOrbWalk.lua"
 local SxOrbWalkDownload = nil
-
 
 if FileExist(SOURCELIB_PATH) then
 	require("SourceLib")
