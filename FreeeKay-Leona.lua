@@ -1,4 +1,4 @@
-local version 				= 1.004
+local version 				= 1.005
 local SCRIPT_NAME			= "FreeeKay-Leona"
 local scriptName 			= "FreeeKay Leona"
 local SCRIPT_HOSTSITE		= "raw.github.com"
