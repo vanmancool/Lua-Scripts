@@ -1,4 +1,5 @@
-local version 				= 1.005
+local version 				= 1.006
+local autoupdate  			= true
 local SCRIPT_NAME			= "FreeeKay-Leona"
 local scriptName 			= "FreeeKay Leona"
 local SCRIPT_HOSTSITE		= "raw.github.com"
