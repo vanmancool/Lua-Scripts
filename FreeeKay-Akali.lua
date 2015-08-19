@@ -17,7 +17,7 @@ local potDelayFunction  = true
 local Recall 			= false
 local IgniteReady		= nil
 
-local version 			= 1.022
+local version 			= 1.023
 local AUTOUPDATE 		= true
 local SCRIPT_NAME		= "FreeeKay-Akali"
 local scriptName		= "FreeeKay Akali"
@@ -261,7 +261,7 @@ function OnCombo()
 
 	if Config.keys.combo and ValidTarget(target) then
 		for i, minion in pairs(enemyMinions.objects) do
-		  	if minion ~= nil and ValidTarget(minion) and ValidTarget(target)then
+		  	if minion ~= nil and ValidTarget(minion) and ValidTarget(target) and Config.comboMenu.combominionR then
 		  		mdis  = GetDistance(minion)
 		  		dashRange = minion:GetDistance(target)
 		  		if mdis < RRange and  tdis > RRange and dashRange < RRange and mdis < tdis  and RReady then
