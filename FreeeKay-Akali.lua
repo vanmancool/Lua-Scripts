@@ -18,7 +18,7 @@ local Recall 			= false
 local IgniteReady		= nil
 local heroEnergy		= nil
 
-local version 			= 1.024
+local version 			= 1.025
 local AUTOUPDATE 		= true
 local SCRIPT_NAME		= "FreeeKay-Akali"
 local scriptName		= "FreeeKay Akali"
@@ -177,7 +177,7 @@ function CustomOnLoad()
 		Config:addSubMenu("Akali Combo Settings", "comboMenu")
 		Config.comboMenu:addParam("comboRRange", "Use R only when out of E Range", SCRIPT_PARAM_ONOFF, false)
 		Config.comboMenu:addParam("experimental", "Experimental Options", SCRIPT_PARAM_INFO, "")
-		Config.comboMenu:addParam("comboOptions", "Options for R Usage", SCRIPT_PARAM_LIST, 1, { "Save", "Aggressive", "Rush" })
+		Config.comboMenu:addParam("comboOptions", "Combo Options", SCRIPT_PARAM_LIST, 1, { "Save", "Aggressive", "Rush" })
 		Config.comboMenu:addParam("comboOptionsRush", "[WIP] Options for R 'Rush' Usage", SCRIPT_PARAM_LIST, 1, { "Minions", "Heroes", "Both" })
 
 		Config:addSubMenu("Akali Lane Clear Settings", "laneclearMenu")
@@ -224,6 +224,15 @@ function CustomOnLoad()
 		Config.draws:addParam("drawignite", "Enable/Disable Ignite Draws", SCRIPT_PARAM_ONOFF, true)
 		Config.draws:addParam("drawdmg", "Enable/Disable Damage Calculation Draws", SCRIPT_PARAM_ONOFF, true)
 
+		Config.keys:permaShow("combo")
+		Config.comboMenu:permaShow("comboOptions")
+		Config:permaShow("space")
+		Config.keys:permaShow("laneclear")
+		Config.laneclearMenu:permaShow("laneclearEnergie")
+		Config:permaShow("space")
+		Config.keys:permaShow("harass")
+		Config.keys:permaShow("lasthit")
+
 
 		TargetSelector = TargetSelector(TARGET_LOW_HP_PRIORITY, 1400)
 		Config:addTS(TargetSelector)
@@ -237,6 +246,7 @@ end
 
 function OnTick()
 	if supportedChamp == true then
+
 		ap = math.floor (myHero.ap + 0.5)
 		ad = math.floor (myHero.totalDamage)
 
@@ -364,6 +374,7 @@ function OnLaneClear()
   		    	CastSpell(_Q, minion)
   		    end
 		end
+		heroEnergy =  myHero.mana
 		if minion ~= nil and ValidTarget(minion, ERange) and heroEnergy > Config.laneclearMenu.laneclearEnergie then
   		    if EReady and Config.laneclearMenu.laneclearE and Config.keys.laneclear then
   		    	CastSpell(_E, minion)
