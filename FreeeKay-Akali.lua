@@ -16,8 +16,9 @@ local qkill 			= nil
 local potDelayFunction  = true
 local Recall 			= false
 local IgniteReady		= nil
+local heroEnergy		= nil
 
-local version 			= 1.023
+local version 			= 1.024
 local AUTOUPDATE 		= true
 local SCRIPT_NAME		= "FreeeKay-Akali"
 local scriptName		= "FreeeKay Akali"
@@ -174,13 +175,13 @@ function CustomOnLoad()
 		Config:addParam("author", "FreeeKay Scripts by Vanmancool", SCRIPT_PARAM_INFO, "")
 
 		Config:addSubMenu("Akali Combo Settings", "comboMenu")
-		Config.comboMenu:addParam("comboQ", "Enable Q on Combo", SCRIPT_PARAM_ONOFF, true)
-		Config.comboMenu:addParam("comboE", "Enable E on Combo", SCRIPT_PARAM_ONOFF, true)
-		Config.comboMenu:addParam("comboR", "Enable R on Combo", SCRIPT_PARAM_ONOFF, true)
-		Config.comboMenu:addParam("combominionR", "R to Minion to get to Champion", SCRIPT_PARAM_ONOFF, true)
-		Config.comboMenu:addParam("experimental", "Experimental", SCRIPT_PARAM_INFO, "")
+		Config.comboMenu:addParam("comboRRange", "Use R only when out of E Range", SCRIPT_PARAM_ONOFF, false)
+		Config.comboMenu:addParam("experimental", "Experimental Options", SCRIPT_PARAM_INFO, "")
+		Config.comboMenu:addParam("comboOptions", "Options for R Usage", SCRIPT_PARAM_LIST, 1, { "Save", "Aggressive", "Rush" })
+		Config.comboMenu:addParam("comboOptionsRush", "[WIP] Options for R 'Rush' Usage", SCRIPT_PARAM_LIST, 1, { "Minions", "Heroes", "Both" })
 
 		Config:addSubMenu("Akali Lane Clear Settings", "laneclearMenu")
+		Config.laneclearMenu:addParam("laneclearEnergie", "Casts only if Energy over", SCRIPT_PARAM_SLICE, 100, 0, 150, 1)
 		Config.laneclearMenu:addParam("laneclearQ", "Enable Q on Lane Clear", SCRIPT_PARAM_ONOFF, true)
 		Config.laneclearMenu:addParam("laneclearE", "Enable E on Lane Clear", SCRIPT_PARAM_ONOFF, true)
 
@@ -190,10 +191,17 @@ function CustomOnLoad()
 
 		Config:addSubMenu("Item and Ignite Usage Settings", "items")
 		Config.items:addParam("items", "Enable Item Usage", SCRIPT_PARAM_ONOFF, true)
-		Config.items:addParam("zhonyas", "Enable Auto Zhonyas", SCRIPT_PARAM_ONOFF, true)
 		Config.items:addParam("ignite", "Enable Ignite Usage", SCRIPT_PARAM_ONOFF, true)
+		Config.items:addParam("space", "", SCRIPT_PARAM_INFO, "")
+		Config.items:addParam("zhonyas", "Enable Auto Zhonyas", SCRIPT_PARAM_ONOFF, true)
+		Config.items:addParam("zhonyasLife", "Casts Zhonyas at %", SCRIPT_PARAM_SLICE, 20, 0, 100, 1)
+		Config.items:addParam("space", "", SCRIPT_PARAM_INFO, "")
 		Config.items:addParam("healpot", "Enable Health Pot Usage", SCRIPT_PARAM_ONOFF, true)
+		Config.items:addParam("healpotLife", "Uses Pot at %", SCRIPT_PARAM_SLICE, 50, 0, 100, 1)
+		Config.items:addParam("space", "", SCRIPT_PARAM_INFO, "")
 		Config.items:addParam("safetyW", "Use W on Low Life", SCRIPT_PARAM_ONOFF, true)
+		Config.items:addParam("safetyWLife", "Casts W at %", SCRIPT_PARAM_SLICE, 20, 0, 100, 1)
+
 
 		Config:addSubMenu("Kill Steal Setting", "kssettings")
 		Config.kssettings:addParam("ksQ", "Kill Steal with Q", SCRIPT_PARAM_ONOFF, true)
@@ -242,6 +250,7 @@ function OnTick()
 		OnHarass()
 		Ignite()
 		DamageCalc()
+
 	end
 end
 
@@ -260,32 +269,86 @@ function OnCombo()
 	local RReady		= myHero:CanUseSpell(_R)
 
 	if Config.keys.combo and ValidTarget(target) then
-		for i, minion in pairs(enemyMinions.objects) do
-		  	if minion ~= nil and ValidTarget(minion) and ValidTarget(target) and Config.comboMenu.combominionR then
-		  		mdis  = GetDistance(minion)
-		  		dashRange = minion:GetDistance(target)
-		  		if mdis < RRange and  tdis > RRange and dashRange < RRange and mdis < tdis  and RReady then
-		  			CastSpell(_R, minion)
-		  		end
-		  	end
-		end
-  		if QReady and Config.comboMenu.comboQ then
-			if tdis < QRange then
+		if Config.comboMenu.comboOptions == 1 then
+			if QReady and tdis < QRange then
 				CastSpell(_Q, target)
+				SxOrb:ForceTarget(target , 125)
+				if Config.comboMenu.comboRRange then
+					if RReady and tdis < RRange and tdis > ERange then
+						CastSpell(_R, target)
+					else if EReady and tdis < ERange then
+						CastSpell(_E)
+						end
+					end
+				else
+					if RReady and tdis < RRange then
+						CastSpell(_R, target)
+					else if EReady and tdis < ERange then
+						CastSpell(_E)
+						end
+					end
+				end
 			end
 		end
-		if RReady and Config.comboMenu.comboR then
-			if tdis < RRange then
-				CastSpell(_R, target)
+		if Config.comboMenu.comboOptions == 2 then
+			if QReady and tdis < QRange then
+				CastSpell(_Q, target)
+				SxOrb:ForceTarget(target , 125)
+				if Config.comboMenu.comboRRange then
+					if RReady and tdis < RRange and tdis > ERange then
+						CastSpell(_R, target)
+					else if EReady and tdis < ERange then
+						CastSpell(_E)
+						end
+					end
+				else
+					if RReady and tdis < RRange then
+						CastSpell(_R, target)
+					else if EReady and tdis < ERange then
+						CastSpell(_E)
+						end
+					end
+				end
 			end
-		end	
-		if EReady and Config.comboMenu.comboE then
-			if tdis < ERange then
-				CastSpell(_E)
+		end
+		if Config.comboMenu.comboOptions == 3 then
+			for i, minion in pairs(enemyMinions.objects) do
+			  	if minion ~= nil and ValidTarget(minion) and ValidTarget(target) then
+			  		mdis  = GetDistance(minion)
+			  		dashRange = minion:GetDistance(target)
+			  		if mdis < RRange and  tdis > RRange and dashRange < RRange and mdis < tdis  and RReady then
+			  			CastSpell(_R, minion)
+			  		end
+			  	end
+			end
+			if Config.comboMenu.comboRRange then
+				if QReady and tdis < QRange then
+					CastSpell(_Q, target)
+					SxOrb:ForceTarget(target , 125)
+				  	if RReady and tdis < RRange and tdis > ERange then
+				  		CastSpell(_R, target)
+				  	else if EReady and tdis < ERange then
+				  		CastSpell(_E)
+					  	end
+					end
+				end
+			else
+				if QReady and tdis < QRange then
+					CastSpell(_Q, target)
+					SxOrb:ForceTarget(target , 125)
+				  	if RReady and tdis < RRange then
+				  		CastSpell(_R, target)
+				  	else if EReady and tdis < ERange then
+				  		CastSpell(_E)
+					  	end
+					end
+				end
 			end
 		end
 	end
 end
+
+
 
 
 function OnLaneClear()
@@ -293,13 +356,15 @@ function OnLaneClear()
 	local QReady		= myHero:CanUseSpell(_Q)
 	local EReady		= myHero:CanUseSpell(_E)
 
+	heroEnergy =  myHero.mana
+
 	for i, minion in pairs(enemyMinions.objects) do
-  		if minion ~= nil and ValidTarget(minion, QRange) then
+  		if minion ~= nil and ValidTarget(minion, QRange) and heroEnergy > Config.laneclearMenu.laneclearEnergie then
   		    if QReady and Config.laneclearMenu.laneclearQ and Config.keys.laneclear then
   		    	CastSpell(_Q, minion)
   		    end
 		end
-		if minion ~= nil and ValidTarget(minion, ERange) then
+		if minion ~= nil and ValidTarget(minion, ERange) and heroEnergy > Config.laneclearMenu.laneclearEnergie then
   		    if EReady and Config.laneclearMenu.laneclearE and Config.keys.laneclear then
   		    	CastSpell(_E, minion)
   		    end
@@ -354,22 +419,23 @@ end
 
 function Items()
 
-	myHeroPercent = myHero.maxHealth / 100 * 20
-	myHeroHpPots = myHero.maxHealth / 100 * 50
+	myHeroHpPots = myHero.maxHealth / 100 * Config.items.healpotLife
+	myHeroPercent = myHero.maxHealth / 100 * Config.items.zhonyasLife
+	myHeroWPercent = myHero.maxHealth / 100 * Config.items.safetyWLife
 
 	if ValidTarget(target) then 
 		tdis  = GetDistance(target)
 	end
 
-	if myHero.health < myHeroHpPots and Config.items.healpot and potDelayFunction == true then
+	if myHero.health < myHeroHpPots and Config.items.healpot and potDelayFunction == true then -- POTS
 		CastItem(RegenerationPotion)
 	end
 
-	if myHero.health < myHeroPercent and Config.items.safetyW and Recall == false then
+	if myHero.health < myHeroWPercent and Config.items.safetyW and Recall == false then 		-- SPELL W
 		CastSpell(_W, myHero.x, myHero.z)
 	end
 
-    if myHero.health < myHeroPercent and Config.items.zhonyas then
+    if myHero.health < myHeroPercent and Config.items.zhonyas then 								-- ZHONYAS
 		CastItem(ZhonyasHourglass)
 	end
 
