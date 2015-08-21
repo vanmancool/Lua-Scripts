@@ -18,7 +18,7 @@ local Recall 			= false
 local IgniteReady		= nil
 local heroEnergy		= nil
 
-local version 			= 1.025
+local version 			= 1.026
 local AUTOUPDATE 		= true
 local SCRIPT_NAME		= "FreeeKay-Akali"
 local scriptName		= "FreeeKay Akali"
@@ -217,10 +217,19 @@ function CustomOnLoad()
 
 		Config:addSubMenu("Draw Settings", "draws")
 		Config.draws:addParam("drawcircle", "Enable/Disable all Draws", SCRIPT_PARAM_ONOFF, true)
+		Config.draws:addParam("space", "", SCRIPT_PARAM_INFO, "")
 		Config.draws:addParam("drawcircleQ", "Enable/Disable Q Range", SCRIPT_PARAM_ONOFF, true)
+		Config.draws:addParam("circleColorQ", "Q draw color", SCRIPT_PARAM_COLOR, {100,191,0,255})
+		Config.draws:addParam("space", "", SCRIPT_PARAM_INFO, "")
 		Config.draws:addParam("drawcircleW", "Enable/Disable W Range", SCRIPT_PARAM_ONOFF, true)
+		Config.draws:addParam("circleColorW", "W draw color", SCRIPT_PARAM_COLOR, {100,191,0,255})
+		Config.draws:addParam("space", "", SCRIPT_PARAM_INFO, "")
 		Config.draws:addParam("drawcircleE", "Enable/Disable E Range", SCRIPT_PARAM_ONOFF, true)
+		Config.draws:addParam("circleColorE", "E draw Color", SCRIPT_PARAM_COLOR, {100,191,0,255})
+		Config.draws:addParam("space", "", SCRIPT_PARAM_INFO, "")
 		Config.draws:addParam("drawcircleR", "Enable/Disable R Range", SCRIPT_PARAM_ONOFF, true)
+		Config.draws:addParam("circleColorR", "R draw color ", SCRIPT_PARAM_COLOR, {100,191,0,255})
+		Config.draws:addParam("space", "", SCRIPT_PARAM_INFO, "")
 		Config.draws:addParam("drawignite", "Enable/Disable Ignite Draws", SCRIPT_PARAM_ONOFF, true)
 		Config.draws:addParam("drawdmg", "Enable/Disable Damage Calculation Draws", SCRIPT_PARAM_ONOFF, true)
 
