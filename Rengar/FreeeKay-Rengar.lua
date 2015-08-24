@@ -1,9 +1,9 @@
-local version 			= 1.026
+local version 			= 1.002
 local AUTOUPDATE 		= true
-local SCRIPT_NAME		= "FreeeKay-Akali"
-local scriptName		= "FreeeKay Akali"
+local SCRIPT_NAME		= "FreeeKay-Rengar"
+local scriptName		= "FreeeKay Rengar"
 local SCRIPT_HOSTSITE	= "raw.github.com"
-local SCRIPT_HOSTNAME	= "/vanmancool/Lua-Scripts/master/"
+local SCRIPT_HOSTNAME	= "/vanmancool/Lua-Scripts/master/Rengar/"
 local SOURCELIB_URL 	= "https://raw.github.com/TheRealSource/public/master/common/SourceLib.lua"
 local SOURCELIB_PATH 	= LIB_PATH.."SourceLib.lua"
 local SXORBWALKLIB_URL	= "https://raw.githubusercontent.com/Superx321/BoL/master/common/SxOrbWalk.lua"
@@ -28,11 +28,48 @@ local smiteRange		= 675
 local rIsActive 		= false
 
 
+if FileExist(SOURCELIB_PATH) then
+	require("SourceLib")
+else
+    DONLOADING_SOURCELIB = true
+    DownloadFile(SOURCELIB_URL, SOURCELIB_PATH, function() print("Required libraries downloaded successfully, please reload") end)
+end
+
+if DOWNLOADING_SOURCELIB then print("Downloading required libraries, please wait...") return end
+
+local RequireI = Require("SourceLib")
+RequireI:Check()
+
+if AUTOUPDATE then
+     SourceUpdater(SCRIPT_NAME, version, SCRIPT_HOSTSITE, SCRIPT_HOSTNAME..SCRIPT_NAME..".lua", SCRIPT_PATH .. GetCurrentEnv().FILE_NAME, SCRIPT_HOSTNAME..SCRIPT_NAME..".version"):CheckUpdate()
+end
+
+
 
 function OnLoad()
 	if myHero.charName == "Rengar" then
 		supportedChamp = true
 		print("<font color=\"#BF00FF\"><b>[Freeekay Champion] Hello and Welcome to "..scriptName.."! </font></b>")
+
+		print("<font color=\"#BF00FF\"><b>Loading Menu... </font></b>")
+
+		if FileExist(LIB_PATH .. "/SxOrbWalk.lua") then
+			require ("SxOrbWalk")
+			SxOrb:LoadToMenu()
+			SxOrbWalkDownload = true
+				else
+			print ("<font color=\"#BF00FF\"><b>You need SxOrbWalk, downloading it now.</font></b>")
+			DownloadFile(SXORBWALKLIB_URL, SXORBWALKLIB_PATH, function() print("<font color=\"#BF00FF\"><b>SxOrbWalk downloaded!</font></b>") end)
+			SxOrbWalkDownload = false
+		end
+
+		if SxOrbWalkDownload == false then
+			 print("<font color=\"#BF00FF\"><b>Required librarys downloaded, press F9 twice to reload!</font></b>")
+		end
+
+		if  SxOrbWalkDownload == true then
+			print("<font color=\"#BF00FF\"><b>Loaded Menu!</font></b>")
+		end
 
 	ItemNames				= {
 		[3144]				= "BilgewaterCutlass",
