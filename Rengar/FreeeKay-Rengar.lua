@@ -94,7 +94,6 @@ function OnLoad()
 	Config:addSubMenu("Harass", "harassMenu")
 		Config.harassMenu:addParam("harassW", "Use W in Harass", SCRIPT_PARAM_ONOFF, true)
 		Config.harassMenu:addParam("harassE", "Use E in Harass", SCRIPT_PARAM_ONOFF, true)
-		Config.harassMenu:addParam("rIsActive", "Ult Test", SCRIPT_PARAM_ONOFF, false)
 
 	Config:addSubMenu("Keys", "keys")
 		Config.keys:addParam("combo", "Combo", SCRIPT_PARAM_ONKEYDOWN, false, 32)
