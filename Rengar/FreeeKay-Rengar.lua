@@ -158,7 +158,7 @@ function OnTick()
 		jungleMinions:update()
 
 		IgniteDamage				= 50 + (20 * myHero.level)
-		target 						= TargetSelector.target
+		target 						= Forcetarget or TargetSelector.target
 		QReady 						= myHero:CanUseSpell(_Q)
 		WReady 						= myHero:CanUseSpell(_W)
 		EReady 						= myHero:CanUseSpell(_E)
@@ -483,4 +483,34 @@ function GetSlotItem(id, unit)
 			return slot
 		end
 	end
+end
+
+
+ function ForcetargetMsg(msg, Key)
+  	if msg == WM_LBUTTONDOWN then
+    	local minD = 0
+    	local starget = nil
+    		for i, enemy in ipairs(GetEnemyHeroes()) do
+    			if ValidTarget(enemy) then
+      				if GetDistance(enemy, mousePos) <= minD or starget == nil then
+      					minD = GetDistance(enemy, mousePos)
+      					starget = enemy
+      				end
+    			end
+    		end
+
+    		if starget and minD < starget.boundingRadius*2 then
+    			if Forcetarget and starget.charName == Forcetarget.charName then
+     				Forcetarget = nil
+      				print("Target un-selected.", true)
+    			else
+      				Forcetarget = starget
+      				print("New target selected: "..starget.charName.."", true)
+    			end
+   			end
+  		end
+  	end
+
+function OnWndMsg(msg, Key)
+	-- body
 end
