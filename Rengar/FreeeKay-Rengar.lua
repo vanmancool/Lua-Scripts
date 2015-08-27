@@ -1,4 +1,4 @@
-local version 			= 1.002
+local version 			= 1.003
 local scriptName		= "FreeeKay Rengar"
 
 local supportedChamp	= nil
@@ -94,6 +94,7 @@ function OnLoad()
 	Config:addSubMenu("Harass", "harassMenu")
 		Config.harassMenu:addParam("harassW", "Use W in Harass", SCRIPT_PARAM_ONOFF, true)
 		Config.harassMenu:addParam("harassE", "Use E in Harass", SCRIPT_PARAM_ONOFF, true)
+		Config.harassMenu:addParam("rIsActive", "Ult Test", SCRIPT_PARAM_ONOFF, false)
 
 	Config:addSubMenu("Keys", "keys")
 		Config.keys:addParam("combo", "Combo", SCRIPT_PARAM_ONKEYDOWN, false, 32)
@@ -184,6 +185,7 @@ function OnCombo()
 	end
 
 		if Config.keys.combo then
+			SxOrb:ForceTarget(target)
 			if ValidTarget(target) and tdis < range and ferocity == 5 and Config.comboMenu.ferocityUsage == 1 then
 				CastSpell(_Q)
 			else if ValidTarget(target) and ferocity == 5 and Config.comboMenu.ferocityUsage == 2 then
@@ -486,7 +488,7 @@ function GetSlotItem(id, unit)
 end
 
 
- function ForcetargetMsg(msg, Key)
+ function OnWndMsg(msg, Key)
   	if msg == WM_LBUTTONDOWN then
     	local minD = 0
     	local starget = nil
@@ -510,7 +512,3 @@ end
    			end
   		end
   	end
-
-function OnWndMsg(msg, Key)
-	-- body
-end
