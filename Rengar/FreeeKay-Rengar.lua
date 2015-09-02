@@ -60,10 +60,9 @@ function OnLoad()
 			    _G.GetInventorySlotItem = GetSlotItem
 
 		require("SxOrbWalk")
-		require("HPrediction")
+		require("SPrediction")
 
-		HP = HPrediction()
-  		HP_E  = HPSkillshot({delay = 0, range = 1100, speed = 1800, type = "DelayLine", width = 90})
+		SP = SPrediction()
 
 	Config = scriptConfig(scriptName.." by Vanmancool", scriptName)
 
@@ -159,7 +158,7 @@ function OnTick()
 		jungleMinions:update()
 
 		IgniteDamage				= 50 + (20 * myHero.level)
-		target 						= Forcetarget or TargetSelector.target
+		target 						= TargetSelector.target
 		QReady 						= myHero:CanUseSpell(_Q)
 		WReady 						= myHero:CanUseSpell(_W)
 		EReady 						= myHero:CanUseSpell(_E)
@@ -185,32 +184,31 @@ function OnCombo()
 	end
 
 		if Config.keys.combo then
-			SxOrb:ForceTarget(target)
 			if ValidTarget(target) and tdis < range and ferocity == 5 and Config.comboMenu.ferocityUsage == 1 then
 				CastSpell(_Q)
 			else if ValidTarget(target) and ferocity == 5 and Config.comboMenu.ferocityUsage == 2 then
 				CastSpell(_W)
 			else if ValidTarget(target) and tdis < ERange and ferocity == 5 and Config.comboMenu.ferocityUsage == 3 then
-				local ECastPos, EHitChance = HP:GetPredict(HP_E, target, myHero)
-				if EHitChance >= 2 then
-					CastSpell(_E, ECastPos.x, ECastPos.z)
-				end
+				local CastPosition, Chance, PredPos = SP:Predict(target, 1100, 1800, 0.25, 90, myHero)
+			if Chance >= 3 then
+                CastSpell(_E, CastPosition.x, CastPosition.z)
+            end
 				else
 					if ValidTarget(target) and tdis < range then
 						CastSpell(_Q)
 						if ValidTarget(target) and tdis < WRange then
 							CastSpell(_W)
-							local ECastPos, EHitChance = HP:GetPredict(HP_E, target, myHero)
-							if EHitChance >= 2 then
-								CastSpell(_E, ECastPos.x, ECastPos.z)
-							end
+							local CastPosition, Chance, PredPos = SP:Predict(target, 1100, 1800, 0.25, 90, myHero)
+							if Chance >= 3 then
+				                CastSpell(_E, CastPosition.x, CastPosition.z)
+			            	end
 						end
 					else
 						if ValidTarget(target) and tdis > range and rIsActive == false then
-							local ECastPos, EHitChance = HP:GetPredict(HP_E, target, myHero)
-							if EHitChance >= 2 then
-								CastSpell(_E, ECastPos.x, ECastPos.z)
-							end
+							local CastPosition, Chance, PredPos = SP:Predict(target, 1100, 1800, 0.25, 90, myHero)
+							if Chance >= 3 then
+				                CastSpell(_E, CastPosition.x, CastPosition.z)
+				            end
 						end
 					end
 				end
@@ -231,9 +229,9 @@ function OnHarass()
 	end
 
 	if ValidTarget(target) and Config.keys.harass and tdis > range then
-		local ECastPos, EHitChance = HP:GetPredict(HP_E, target, myHero)
-		if EHitChance >= 2 then
-			CastSpell(_E, ECastPos.x, ECastPos.z)
+		local CastPosition, Chance, PredPos = SP:Predict(target, 1100, 1800, 0.25, 90, myHero)
+		if Chance >= 3 then
+		    CastSpell(_E, CastPosition.x, CastPosition.z)
 		end
 	end
 end
@@ -254,10 +252,7 @@ function OnLaneClear()
 
 			if minion ~= nil and ValidTarget(minion) and Config.keys.laneclear then
 				if Config.laneclearMenu.LaneclearE then
-	  		    	local ECastPos, EHitChance = HP:GetPredict(HP_E, minion, myHero)
-					if EHitChance >= 2 then
-						CastSpell(_E, ECastPos.x, ECastPos.z)
-					end
+					CastSpell(_E, minion.x, minion.z)
 				if Config.laneclearMenu.laneclearQ then
 					CastSpell(_Q)
 				if Config.laneclearMenu.laneclearW then
@@ -285,28 +280,21 @@ function OnJungleClear()
 							CastSpell(_W)
 						end
 						if Config.keys.laneclear and Config.jungleclearMenu.ferocityUsageJungle == 3 then
-							local ECastPos, EHitChance = HP:GetPredict(HP_E, minion, myHero)
-							if EHitChance >= 2 then
-								CastSpell(_E, ECastPos.x, ECastPos.z)
-							end
+							CastSpell(_E, minion.x, minion.z)
 						end
 						if minion ~= nil and ValidTarget(minion) and Config.keys.laneclear then
 							if Config.jungleclearMenu.jungleclearE then
-				  		    	local ECastPos, EHitChance = HP:GetPredict(HP_E, minion, myHero)
-								if EHitChance >= 2 then
-									CastSpell(_E, ECastPos.x, ECastPos.z)
-								end
+								CastSpell(_E, minion.x, minion.z)
 							if Config.jungleclearMenu.jungleclearQ then
 								CastSpell(_Q)
 							if Config.jungleclearMenu.jungleclearW then
 								CastSpell(_W)
-								end
 							end
 						end
 					end
-			  	end
-			end
-
+				end
+		  	end
+		end
 
 
 
@@ -486,29 +474,3 @@ function GetSlotItem(id, unit)
 		end
 	end
 end
-
-
- function OnWndMsg(msg, Key)
-  	if msg == WM_LBUTTONDOWN then
-    	local minD = 0
-    	local starget = nil
-    		for i, enemy in ipairs(GetEnemyHeroes()) do
-    			if ValidTarget(enemy) then
-      				if GetDistance(enemy, mousePos) <= minD or starget == nil then
-      					minD = GetDistance(enemy, mousePos)
-      					starget = enemy
-      				end
-    			end
-    		end
-
-    		if starget and minD < starget.boundingRadius*2 then
-    			if Forcetarget and starget.charName == Forcetarget.charName then
-     				Forcetarget = nil
-      				print("Target un-selected.", true)
-    			else
-      				Forcetarget = starget
-      				print("New target selected: "..starget.charName.."", true)
-    			end
-   			end
-  		end
-  	end
